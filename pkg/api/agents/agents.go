@@ -21,6 +21,7 @@ import (
 	// Standard
 	"encoding/base64"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -312,6 +313,28 @@ func ExecuteShellcode(agentID uuid.UUID, Args []string) messages.UserMessage {
 		}
 	}
 	return messages.ErrorMessage(fmt.Sprintf("not enough arguments provided for the Agent ExecuteShellcode call: %s", Args))
+}
+
+// ExecuteWASM calls the corresponding shellcode module to create a job that executes the provided shellcode
+// Args[0] = "execute-wasm
+// Args[1] = bytecode uri
+func ExecuteWASM(agentID uuid.UUID, Args []string) messages.UserMessage {
+	length := len(Args)
+	if length > 1 {
+		u := strings.ToLower(Args[1])
+		validUrl, err := url.Parse(u)
+		if err != nil {
+			m := fmt.Sprintf("invalid url:\r\n%s", err.Error())
+			return messages.ErrorMessage(m)
+		}
+		if !(validUrl.Scheme != "http" || validUrl.Scheme == "https") {
+			m := fmt.Sprintf("invalid protocol: %s, only http(s) supported\r\n", validUrl.Scheme)
+			return messages.ErrorMessage(m)
+		}
+		job, err := jobs.Add(agentID, "wasm", Args[0:])
+		return messages.JobMessage(agentID, job)
+	}
+	return messages.ErrorMessage(fmt.Sprintf("not enough arguments provided for the Agent ExecuteWASM call: %s", Args))
 }
 
 // Exit instructs the agent to quit running

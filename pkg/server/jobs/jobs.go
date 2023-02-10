@@ -51,7 +51,7 @@ var JobsChannel = make(map[uuid.UUID]chan merlinJob.Job)
 // Jobs is a map that contains specific information about an individual job and is embedded in the JobsChannel
 var Jobs = make(map[string]info)
 
-//  info is a structure for holding data for single task assigned to a single agent
+// info is a structure for holding data for single task assigned to a single agent
 type info struct {
 	AgentID   uuid.UUID // ID of the agent the job belong to
 	Type      string    // Type of job
@@ -207,6 +207,12 @@ func Add(agentID uuid.UUID, jobType string, jobArgs []string) (string, error) {
 		job.Payload = merlinJob.Command{
 			Command: "clr",
 			Args:    append([]string{jobType}, jobArgs...),
+		}
+	case "wasm":
+		job.Type = merlinJob.MODULE
+		job.Payload = merlinJob.Command{
+			Command: "wasm",
+			Args:    jobArgs,
 		}
 	case "ls":
 		job.Type = merlinJob.NATIVE

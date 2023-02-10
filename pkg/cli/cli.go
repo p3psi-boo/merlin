@@ -79,19 +79,21 @@ func Shell() {
 	log.SetOutput(core.Prompt.Stderr())
 	menu.Set(menu.MAIN)
 
+	// Debug
+
 	for {
 		// Read command line input
 		line, err := core.Prompt.Readline()
 
 		// Handle Ctrl+C
 		if err == readline.ErrInterrupt {
-			if core.Confirm("Are you sure you want to quit the server?") {
-				core.Exit()
-			}
+			//if core.Confirm("Are you sure you want to quit the server?") {
+			core.Exit()
+			//}
 		} else if err == io.EOF {
-			if core.Confirm("Are you sure you want to quit the server?") {
-				core.Exit()
-			}
+			//if core.Confirm("Are you sure you want to quit the server?") {
+			core.Exit()
+			//}
 		}
 
 		line = strings.TrimSpace(line)

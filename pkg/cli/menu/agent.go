@@ -65,6 +65,8 @@ func handlerAgent(cmd []string) {
 		go func() { core.MessageChannel <- agentAPI.ExecutePE(agent, cmd) }()
 	case "execute-shellcode", "shinject":
 		core.MessageChannel <- agentAPI.ExecuteShellcode(agent, cmd)
+	case "wasm", "wasi":
+		core.MessageChannel <- agentAPI.ExecuteWASM(agent, cmd)
 	case "exit":
 		if len(cmd) > 1 {
 			if strings.ToLower(cmd[1]) == "-y" {
@@ -323,6 +325,7 @@ func completerAgent() *readline.PrefixCompleter {
 		readline.PcItem("status"),
 		readline.PcItem("touch"),
 		readline.PcItem("upload"),
+		readline.PcItem("wasm"),
 	}
 
 	// Commands only available to Windows agents
